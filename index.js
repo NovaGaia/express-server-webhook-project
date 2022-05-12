@@ -64,7 +64,7 @@ app.post('/hook', (req, res) => {
     console.log('Security check Bearer 👌🏻');
     exec('echo building > ./status.txt');
     console.log('CMD is building... ⌛');
-    const build = spawn('npm', ['run', 'check:ok']); // <-- what to do if security validate
+    const build = spawn('npm', ['run', 'build']); // <-- what to do if security validate
     build.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
     });
@@ -86,7 +86,6 @@ app.post('/hook', (req, res) => {
     });
   } else {
     console.log('Security KO Bearer ⛔');
-    exec('npm run check:ko'); // <-- what to do if security failed (optional)
     res.statusMessage = 'Authorization KO';
     res.status(401).send({ status: 'Authorization KO' }).end(); // Responding is important
   }
