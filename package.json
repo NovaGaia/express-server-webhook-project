@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "check:ok": "echo OK > ./check.txt",
     "check:ko": "echo KO > ./check.txt",
-    "generate": "apidoc -i . -e node_modules -o apidoc"
+    "generate": "apidoc -i . -e node_modules -o docs"
   },
   "author": "",
   "license": "ISC",
