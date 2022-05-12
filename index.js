@@ -12,12 +12,12 @@ const PORT = process.env.API_PORT;
 app.use(bodyParser.json());
 
 /**
- * @api {get} /apidoc/ Current documentation
+ * @api {get} /docs/ Current documentation
  * @apiName GetAPIDoc
  * @apiGroup Utils
  * @apiDescription ENDPOINT to read the APIs documentation.
  */
-app.use('/apidoc', express.static('apidoc'));
+app.use('/docs', express.static('docs'));
 
 /**
  * @api {post} /hook/ Trigger Action
