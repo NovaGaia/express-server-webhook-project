@@ -1,7 +1,7 @@
 // Require express and body-parser
 const express = require('express');
 const bodyParser = require('body-parser');
-const exec = require('child_process').exec;
+const { spawn, exec } = require('node:child_process');
 
 // Initialize express and define a port
 const app = express();
@@ -14,9 +14,23 @@ app.use(bodyParser.json());
 app.post('/hook', (req, res) => {
   if (secret === req.headers.authorization.split(' ')[1]) {
     console.log('Security check Bearer 👌🏻');
-    exec('npm run check:ok');
-    res.status(200).end(); // Responding is important
-    // console.log(req.body); // Call your action on the request here
+    console.log('CMD is building... ⌛');
+    const build = spawn('npm', ['run', 'check:ok']);
+    build.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    build.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
+
+    build.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`build process exited with code ${code}`);
+      }
+      console.log('CMD builded 🚀');
+      res.status(200).end(); // Responding is important
+    });
   } else {
     console.log('Security KO Bearer ⛔');
     exec('npm run check:ko');
