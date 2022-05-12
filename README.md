@@ -10,6 +10,8 @@ use of express server.
 }
 ```
 
+Complete API Documentation [here](apidoc)
+
 # Endpoints
 
 ### `/hook`
