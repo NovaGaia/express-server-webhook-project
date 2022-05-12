@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "check:ok": "echo OK > ./status.txt",
-    "check:ko": "echo KO > ./status.txt"
+    "check:ok": "echo OK > ./check.txt",
+    "check:ko": "echo KO > ./check.txt"
   },
   "author": "",
   "license": "ISC",

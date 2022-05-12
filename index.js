@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.post('/hook', (req, res) => {
   if (process.env.API_SECRET === req.headers.authorization.split(' ')[1]) {
     console.log('Security check Bearer 👌🏻');
+    exec('echo building > ./status.txt');
     console.log('CMD is building... ⌛');
     const build = spawn('npm', ['run', 'check:ok']);
     build.stdout.on('data', (data) => {
@@ -27,8 +28,10 @@ app.post('/hook', (req, res) => {
     build.on('close', (code) => {
       if (code !== 0) {
         console.log(`build process exited with code ${code}`);
+      } else {
+        console.log('CMD builded 🚀');
       }
-      console.log('CMD builded 🚀');
+      exec('echo inactive > ./status.txt');
       res.status(200).end(); // Responding is important
     });
   } else {
@@ -37,6 +40,22 @@ app.post('/hook', (req, res) => {
     res.statusMessage = 'Authorization KO';
     res.status(403).end(); // Responding is important
   }
+});
+
+app.get('/check', (req, res) => {
+  exec('echo "$(<status.txt )"', (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      res.statusMessage = err;
+      res.status(403).end();
+      return;
+    }
+    if (stdout.trim() === '') {
+      res.send('vide');
+    } else {
+      res.send(stdout);
+    }
+  });
 });
 
 // Start express on the defined port
