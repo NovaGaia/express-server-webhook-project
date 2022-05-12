@@ -1,18 +1,18 @@
-// Require express and body-parser
+require('dotenv').config();
+// Require express, body-parser and child_process
 const express = require('express');
 const bodyParser = require('body-parser');
 const { spawn, exec } = require('node:child_process');
 
 // Initialize express and define a port
 const app = express();
-const PORT = 3000;
-const secret = '1234';
+const PORT = process.env.API_PORT;
 
 // Tell express to use body-parser's JSON parsing
 app.use(bodyParser.json());
 
 app.post('/hook', (req, res) => {
-  if (secret === req.headers.authorization.split(' ')[1]) {
+  if (process.env.API_SECRET === req.headers.authorization.split(' ')[1]) {
     console.log('Security check Bearer 👌🏻');
     console.log('CMD is building... ⌛');
     const build = spawn('npm', ['run', 'check:ok']);
@@ -37,7 +37,6 @@ app.post('/hook', (req, res) => {
     res.statusMessage = 'Authorization KO';
     res.status(403).end(); // Responding is important
   }
-  //   exec('echo ' + JSON.stringify(req.body) + ' > ./test.txt');
 });
 
 // Start express on the defined port
