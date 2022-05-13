@@ -63,6 +63,14 @@ app.use('/docs', express.static('docs'));
  * After the action ended, the `/hooks/check/build` endpoint return `status: inactive`.
  */
 app.post('/hooks/trigger/build', (req, res) => {
+  if (
+    !!!req.headers.authorization ||
+    !!!req.headers.authorization.split(' ')[1]
+  ) {
+    console.log('Security KO Bearer ⛔');
+    res.status(401).send({ status: 'Authorization required' }).end(); // Responding is important
+    return;
+  }
   if (process.env.API_SECRET === req.headers.authorization.split(' ')[1]) {
     console.log('Security check Bearer 👌🏻');
     exec('echo building > ./status.txt');
