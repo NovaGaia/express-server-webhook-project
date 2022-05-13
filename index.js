@@ -15,17 +15,19 @@ app.use(bodyParser.json());
  * @api {get} /docs/ Current documentation
  * @apiName GetAPIDoc
  * @apiGroup Utils
+ * @apiSampleRequest off
  * @apiDescription ENDPOINT to read the APIs documentation.
  */
 app.use('/docs', express.static('docs'));
 
 /**
- * @api {post} /hook/ Trigger Action
- * @apiName TriggerAction
- * @apiGroup Actions
+ * @api {post} /hooks/trigger/build Trigger Build Action
+ * @apiName TriggerBuild
+ * @apiGroup Triggers
+ * @apiPermission Securized by Bearer
  *
- * @apiHeader {String} Authorization secret Bearer of the Webhooks (required).
- * @apiHeaderExample {Header} Authorization
+ * @apiHeader {String} Authorization secret Bearer of the Webhook (required).
+ * @apiHeaderExample {Header} Authorization-Exemple
  *     "Authorization: Bearer 5f048fe"
  *
  * @apiSuccess {Object} result Result of the trigger.
@@ -36,30 +38,31 @@ app.use('/docs', express.static('docs'));
  *       "status": "success"
  *     }
  *
- * @apiError (500) ActionStatusThrowError Action triggered by calling hook API generate an error.
+ * @apiError (500) TriggerBuildThrowError Build triggered by calling hook API generate an error.
  *
  * @apiErrorExample (500) Error-Response (Action triggered error):
  *     HTTP/1.1 500 KO
  *     {
  *       "status": "failed",
- *       "errorCode": "code"
+ *       "errorCode": "<code>"
  *     }
  *
- * @apiError (401) AuthenicationError The Bearer not match or absent.
+ * @apiError (401) AuthenticationError-Response The Bearer not match or absent.
  *
  * @apiErrorExample (401) Error-Response (Bearer error):
  *     HTTP/1.1 401 KO
  *     {
  *       "status": "Authorization KO"
  *     }
+
  *
- * @apiDescription ENDPOINT to start action securized by a Bearer.
+ * @apiDescription ENDPOINT to trigger a biuld. Action securized by a Bearer.
  *
- * During the action, the `/check` endpoint return `status: building`.
+ * During the action, the `/hooks/check/build` endpoint return `status: building`.
  *
- * After the action ended, the `/check` endpoint return `status: inactive`.
+ * After the action ended, the `/hooks/check/build` endpoint return `status: inactive`.
  */
-app.post('/hook', (req, res) => {
+app.post('/hooks/trigger/build', (req, res) => {
   if (process.env.API_SECRET === req.headers.authorization.split(' ')[1]) {
     console.log('Security check Bearer 👌🏻');
     exec('echo building > ./status.txt');
@@ -92,29 +95,30 @@ app.post('/hook', (req, res) => {
 });
 
 /**
- * @api {get} /check/ Request Hook status
- * @apiName GetStatus
- * @apiGroup Utils
+ * @api {get} /hooks/check/build Request Trigger Build status
+ * @apiName GetBuildStatus
+ * @apiGroup Checks
+ * @apiPermission Everyone | unsecurized
  *
  * @apiSuccess {Object} status `inactive`, `building` and `empty...`.
  *
- * @apiSuccessExample Success-Response (inactive):
- *     HTTP/1.1 200 OK
- *     {
- *       "status": "inactive"
- *     }
  * @apiSuccessExample Success-Response (building):
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "building"
  *     }
- * @apiSuccessExample Success-Response:
+ * @apiSuccessExample Success-Response (inactive):
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "inactive"
+ *     }
+ * @apiSuccessExample Success-Response (empty, build has never run):
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "Hook has never run. Come back later..."
  *     }
  *
- * @apiError (500) ActionStatusNotFound Status Action triggered by calling hook API was not found.
+ * @apiError (500) TriggerBuildStatusNotFound Status Action triggered by calling hook API was not found.
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500 KO
@@ -123,11 +127,11 @@ app.post('/hook', (req, res) => {
  *       "message": "<Error explanation>"
  *     }
  *
- * @apiDescription ENDPOINT to check status of Action triggered by `/hook` (no bearer mandatory).
+ * @apiDescription ENDPOINT to check status of Build triggered by `/hooks/trigger/build` (no bearer mandatory).
  *
  * Responses possibilities : `inactive`, `building` and `empty...`
  */
-app.get('/check', (req, res) => {
+app.get('/hooks/check/build', (req, res) => {
   const response = {};
   exec('echo "$(<status.txt )"', (err, stdout, stderr) => {
     if (err) {
