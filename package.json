@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo OK > ./check.txt",
+    "build": "cd $HOME/app && npm run build",
     "generate": "apidoc -i . -e node_modules -o docs"
   },
   "author": "",

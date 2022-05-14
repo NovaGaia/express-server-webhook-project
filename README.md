@@ -14,10 +14,12 @@ Complete API Documentation [here](https://novagaia.github.io/express-server-webh
 
 # Endpoints
 
-### `/hook`
+### `/hooks/trigger/build`
 
 Used to start an action, securized by a `Bearer`.
 
-### `/check`
+Launch `"build": "cd $HOME/app && npm run build"` so `app` is mendatory !
+
+### `/hooks/check/build`
 
 Used to check the state of the action trigger by `/hook`.
